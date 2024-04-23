@@ -45,9 +45,9 @@ public class LibraryManagementSystem {
         String userType = scanner.nextLine().trim().toLowerCase();
         if(userType.equals("user")) {
         System.out.print("Username: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine().trim();
         System.out.print("Password: ");
-        String password = scanner.nextLine();
+        String password = scanner.nextLine().trim();
         	if(accountManager.AuthenticateUser(username, password)){
                 User user = accountManager.getUser(username);
                 userSession(user);
@@ -61,9 +61,9 @@ public class LibraryManagementSystem {
 
     public void Register(){
         System.out.print("Username: ");
-        String username = scanner.nextLine();
+        String username = scanner.nextLine().trim();
         System.out.print("Password: ");
-        String password = scanner.nextLine();
+        String password = scanner.nextLine().trim();
         if(!accountManager.checkUserExist(username)){
             accountManager.addUser(username, password);
             System.out.println("User created, you need to Login");
@@ -82,14 +82,9 @@ public class LibraryManagementSystem {
             		user.get_all_books(books);
             		break;
                 case "2":
-                    System.out.print("Title: ");
-                    String search = scanner.nextLine().trim();
-                    Book book = user.get_book_info(books, search);
-                    if(book == null){
-                        System.out.println("Book not found");
-                        break;
-                    }
-                    System.out.println(book);
+                    System.out.print("Search: ");
+                    String search = scanner.nextLine().trim().toLowerCase();
+                    user.get_book_info(books, search);
                     break;
                 case "3":
                     System.out.println(user);
@@ -133,7 +128,7 @@ public class LibraryManagementSystem {
         
         try{
         	Book[] books = new Book[0];
-        	User[] users = {new User("Yabujin", "1234"), new User("Bladee", "5436")};
+        	User[] users = {new User("yabujin", "1234"), new User("bladee", "5436")};
         	
             JSONParser parser = new JSONParser(); //create the parser
             
@@ -147,6 +142,9 @@ public class LibraryManagementSystem {
             	long year = (long) bookjson.get("year");
             	long pages = (long) bookjson.get("pages");
             	//todo print only title and author when all are getting printed
+            	//todo save users
+            	//todo add librarian login
+            	//todo add delete update function to books
             	
             	Book newBook = new Book(title, author, year, pages);
             	Book[] newBooks = Arrays.copyOf(books, books.length + 1);
@@ -234,13 +232,35 @@ class User{
         setPassword(password);
     }
 
-    public Book get_book_info(Book[] books, String search){
+    public void get_book_info(Book[] books, String search){
+    	boolean check = false;
         for(Book book : books){
-            if(book.getTitle().equals(search) || book.getAuthor().equals(search)){
-                return book;
+        	String title = book.getTitle().toLowerCase();
+        	String[] titleArr = title.split(" ", -2);
+        	
+        	String author = book.getAuthor().toLowerCase();
+        	String[] authorArr = author.split(" ", -2);
+        	if(title.equals(search) || author.equals(search)){
+        		System.out.println(book);
+        		check = true;
+            }else{
+            	for(String splitTitle : titleArr) {
+                    if(splitTitle.equals(search)) {
+                    	System.out.println(book);
+                    	check = true;
+                    }
+            	}
+            	for(String splitAuthor : authorArr) {
+            		if(splitAuthor.equals(search)) {
+            			System.out.println(book); 
+                    	check = true;
+            		}
+            	}
             }
+        } 
+        if(!check) {
+        	System.out.println("Book not found.");
         }
-        return null;
     }
     
     public void get_all_books(Book[] books) {
