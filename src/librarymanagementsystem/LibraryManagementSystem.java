@@ -43,15 +43,19 @@ public class LibraryManagementSystem {
     public void Login(){
         System.out.println("What user type are you? (user, librarian)");
         String userType = scanner.nextLine().trim().toLowerCase();
+        if(userType.equals("user")) {
         System.out.print("Username: ");
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        if(accountManager.AuthenticateUser(username, password)){
-            User user = accountManager.getUser(username);
-            userSession(user);
-        }else{
-            System.out.println("Wrong username or wrong password");
+        	if(accountManager.AuthenticateUser(username, password)){
+                User user = accountManager.getUser(username);
+                userSession(user);
+            }else{
+                System.out.println("Wrong username or wrong password");
+            }
+        }else {
+        	System.out.println("error");
         }
     }
 
